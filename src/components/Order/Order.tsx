@@ -31,7 +31,6 @@ const Order = () => {
     if (currentState && currentState.length > 0) {
       dispatch(setOrders(JSON.parse(currentState) || []));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const removeProduct = (productId: number) => {
