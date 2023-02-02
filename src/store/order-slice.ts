@@ -37,6 +37,11 @@ const initialState: OrderState = {
   currentOrders: [],
 };
 
+export type Option = {
+  value: string;
+  label: string;
+};
+
 export const orderSlice = createSlice({
   name: "order",
   initialState,
@@ -106,7 +111,31 @@ export const {
 } = orderSlice.actions;
 
 export const selectRestaurants = (state: RootState) => state.order.restaurants;
+export const selectRestaurantOptions = (state: RootState) => {
+  const options: Option[] = [];
+  state.order.restaurants.forEach((restaurant) => {
+    options.push({
+      value: restaurant.name.toLowerCase(),
+      label: restaurant.name,
+    });
+  });
+
+  return options;
+};
+
 export const selectProducts = (state: RootState) => state.order.products;
+export const selectProductsOptions = (state: RootState) => {
+  const options: Option[] = [];
+  state.order.products.forEach((product) => {
+    options.push({
+      value: product.name.toLowerCase(),
+      label: product.name,
+    });
+  });
+
+  return options;
+};
+
 export const selectCurrentOrders = (state: RootState) =>
   state.order.currentOrders;
 

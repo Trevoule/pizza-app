@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
+import Select from "react-select";
 import {
   addToOrder,
+  Option,
   Restaurant,
   selectProducts,
+  selectProductsOptions,
+  selectRestaurantOptions,
   selectRestaurants,
 } from "../../store/order-slice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
@@ -12,8 +16,11 @@ const FilterForm = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState("");
   const [chosenProduct, setChosenProduct] = useState("");
 
-  const products = useAppSelector(selectProducts);
   const restaurants = useAppSelector(selectRestaurants);
+  const optionsRestaurants = useAppSelector(selectRestaurantOptions);
+
+  const products = useAppSelector(selectProducts);
+  const optionsProducts = useAppSelector(selectProductsOptions);
 
   const dispatch = useAppDispatch();
 
@@ -28,12 +35,14 @@ const FilterForm = () => {
     dispatch(fetchProductsData(restaurantId));
   }, [restaurants, selectedRestaurant, dispatch]);
 
-  const onSelectRestaurant = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedRestaurant(e.target.value);
+  const onSelectRestaurant = (option: Option | null) => {
+    if (!option) return;
+    setSelectedRestaurant(option.label);
   };
 
-  const onSelectProduct = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setChosenProduct(e.target.value);
+  const onSelectProduct = (option: Option | null) => {
+    if (!option) return;
+    setChosenProduct(option.label);
   };
 
   const onAddOrder = () => {
@@ -51,46 +60,34 @@ const FilterForm = () => {
   return (
     <div className="FilterForm">
       <div>
-        <select
+        <Select
+          className="Select"
+          options={optionsRestaurants}
           name="selectRestaurant"
           id="selectRestaurant"
+          value={
+            optionsRestaurants[
+              restaurants.findIndex(
+                (restaurant) => restaurant.name === selectedRestaurant
+              )
+            ]
+          }
           onChange={onSelectRestaurant}
-          value={selectedRestaurant}
-        >
-          <option value="" disabled hidden>
-            Select restaurant
-          </option>
-          {restaurants.map((restaurant) => (
-            <option
-              key={restaurant.id + Math.random()}
-              id={restaurant.id.toString()}
-              value={restaurant.name}
-            >
-              {restaurant.name}
-            </option>
-          ))}
-        </select>
-        <select
+        />
+        <Select
+          className="Select"
+          options={optionsProducts}
           name="selectPizza"
           id="selectPizza"
-          disabled={!products.length}
+          value={
+            optionsProducts[
+              products.findIndex((product) => product.name === chosenProduct)
+            ]
+          }
           onChange={onSelectProduct}
-          value={chosenProduct}
-        >
-          <option value="" disabled hidden>
-            Select pizza
-          </option>
-          {products &&
-            products.map((product) => (
-              <option
-                key={product.id}
-                id={product.id.toString()}
-                value={product.name}
-              >
-                {product.name}
-              </option>
-            ))}
-        </select>
+          isDisabled={!products.length}
+        />
+
         <button type="button" onClick={onAddOrder} disabled={!chosenProduct}>
           Add to table
         </button>
