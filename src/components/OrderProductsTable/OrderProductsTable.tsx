@@ -22,7 +22,9 @@ const OrderProductsList = ({ removeProduct, changeProductCost }: Props) => {
   }, [chosenProducts]);
 
   const onChangeCost = (index: number, price: string) => {
-    const newPrice = Number(price);
+    const newPrice = Number(price.replace(",", "."));
+    if (isNaN(newPrice)) return;
+
     changeProductCost(newPrice, index);
   };
 
